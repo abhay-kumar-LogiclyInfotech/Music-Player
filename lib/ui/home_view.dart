@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
-import 'package:responsive_app/ui/sidebar_view.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:responsive_app/bloc/counter/counter_bloc.dart';
+import 'package:responsive_app/bloc/counter/counter_event.dart';
+import 'package:responsive_app/bloc/counter/counter_state.dart';
+import 'package:responsive_app/ui/examples/counter_view.dart';
+import 'package:responsive_app/ui/examples/switch_example_view.dart';
+
+import '../services/equatable_example.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -10,80 +16,57 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  // Create a GlobalKey for ScaffoldState
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final _advancedDrawerController = AdvancedDrawerController();
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return AdvancedDrawer(
-        backdrop: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [theme.colorScheme.primary, theme.colorScheme.secondary.withOpacity(0.3)],
-            ),
-          ),
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: _buildUi(theme:theme),
+      floatingActionButton: FloatingActionButton(
+          backgroundColor: theme.primaryColor,
+          child: Icon(Icons.telegram,color: theme.iconTheme.color,),
+          onPressed: (){
+            Person person =  const Person(name: "Abhay",age: 10);
+            Person person1 =  const Person(name: "Abhay",age: 10);
+            debugPrint(person.hashCode.toString());
+            debugPrint(person1.hashCode.toString());
+            print(person1 == person);
+
+          }),
+    );
+  }
+
+  Widget _buildUi({required ThemeData theme}) {
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+      children: [
+        _customListTile(
+          theme: theme,
+          title: "Counter View",
+          onTap: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>const CounterView()));
+          }
         ),
-        controller: _advancedDrawerController,
-        animationCurve: Curves.easeInOut,
-        animationDuration: const Duration(milliseconds: 300),
-        animateChildDecoration: true,
-        rtlOpening: false,
-        // openScale: 1.0,
-        disabledGestures: false,
-        childDecoration: const BoxDecoration(
-          // NOTICE: Uncomment if you want to add shadow behind the page.
-          // Keep in mind that it may cause animation jerks.
-          // boxShadow: <BoxShadow>[
-          //   BoxShadow(
-          //     color: Colors.black12,
-          //     blurRadius: 0.0,
-          //   ),
-          // ],
-          borderRadius: BorderRadius.all(Radius.circular(16)),
+        _customListTile(
+            theme: theme,
+            title: "Switch Example View",
+            onTap: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>const SwitchExampleView()));
+            }
         ),
-        drawer: const SidebarView(),
-        child: Scaffold(
-          key: _scaffoldKey,
-          appBar: AppBar(
-            elevation: 1,
-            shadowColor: theme.colorScheme.onSurfaceVariant,
-            surfaceTintColor: theme.colorScheme.onSurfaceVariant,
-            title: Text("Welcome To Master Academy", style: theme.textTheme.bodySmall),
-            centerTitle: true,
-            leading: IconButton(
-                icon:  Icon(Icons.menu,color: theme.iconTheme.color),
-                onPressed: () {
-                  // _scaffoldKey.currentState?.openDrawer();
-                  _advancedDrawerController.showDrawer();
-                }),
-            backgroundColor: theme.appBarTheme.backgroundColor,
-            actions: [
-              IconButton(
-                icon:  Icon(Icons.search,color: theme.iconTheme.color),
-                onPressed: () {
-                  // TODO: Implement search functionality
-                },
-              ),
-              IconButton(
-                icon:  Icon(Icons.notifications,color: theme.iconTheme.color),
-                onPressed: () {
-                  // TODO: Implement notifications functionality
-                },
-              ),
-              IconButton(
-                icon:  Icon(Icons.person,color: theme.iconTheme.color),
-                onPressed: () {
-                  // TODO: Implement user profile functionality
-                },
-              ),
-            ],
-          ),
-        ));
+      ],
+    );
+  }
+
+  Widget _customListTile({required theme,required title,required dynamic onTap}){
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: ListTile(
+        tileColor: theme.listTileTheme.tileColor,
+        textColor: theme.listTileTheme.textColor,
+        title: Text(title),
+        onTap: onTap,
+      ),
+    );
   }
 }
